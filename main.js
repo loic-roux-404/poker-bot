@@ -64,6 +64,8 @@ const determineActionForReward = (reward, turn) => {
 
 // Function to generate a random action for each player
 const generateAction = (playerAction, playerNb, hands, turn) => {
+  if (turn > 0) return playerAction;
+
   const playerHand = hands[playerNb].map((hand) => hand.substr(0, 1)).join("");
   const playerHandReversed = playerHand.split("").reverse().join("");
   const foundState = preflopTable
@@ -95,7 +97,9 @@ const generateAction = (playerAction, playerNb, hands, turn) => {
   return { ...playerAction, action: action };
 };
 
-const generateRaises = (playerAction, oldPot, newPot) => {
+const generateRaises = (turn, playerAction, oldPot, newPot) => {
+  if (turn === 0) return playerAction;
+
   const diff = newPot - oldPot;
 
   if (diff === 0)
@@ -105,7 +109,7 @@ const generateRaises = (playerAction, oldPot, newPot) => {
     };
 
   return {
-    ...playerAction,
+    action: actions[2],
     raise: playerAction.raise
   };
 };
@@ -186,7 +190,7 @@ const round = (turn) => {
 
   const newPot = potSumFromActions(playerActions);
   playerActions = playerActions.map((playerAction) =>
-    generateRaises(playerAction, pot, newPot)
+    generateRaises(turn, playerAction, pot, newPot)
   );
 
   console.log(playerActions);
